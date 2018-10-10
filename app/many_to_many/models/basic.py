@@ -1,5 +1,10 @@
 from django.db import models
 
+__all__ = (
+    'Topping',
+    'Pizza',
+)
+
 
 # Create your models here.
 class Topping(models.Model):
@@ -15,6 +20,3 @@ class Pizza(models.Model):
 
     def __str__(self):
         return self.name
-
-class FacebookUser(models.Model):
-    name = models.CharField(max_length=50)
