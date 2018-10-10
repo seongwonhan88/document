@@ -4,6 +4,7 @@ __all__ = (
     'InstagramUser',
 )
 
+
 class InstagramUser(models.Model):
     # following : following list
     # followers : my followers
@@ -18,7 +19,7 @@ class InstagramUser(models.Model):
     following = models.ManyToManyField(
         'self',
         symmetrical=False,
-        related_name= 'followers', # 거꾸로 올때 어떻게 표현할 것인가
+        related_name='followers',  # 거꾸로 올때 어떻게 표현할 것인가
     )
 
     def __str__(self):
