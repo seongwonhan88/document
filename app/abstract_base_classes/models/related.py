@@ -23,8 +23,10 @@ class PostBase(models.Model):
         # 자신이 특정 post의 'author'인 경우
         #
         # 해당하는 모든 PostBase객체를 참조하는 역방향 매니저 이름
-        related_name='%(class)s_set',
-        related_query_name='%(class)s',
+        # %(class) class 상속
+        # %(app_label) app 상속
+        related_name='%(app_label)s_%(class)s_set',
+        related_query_name='%(app_label)s_%(class)s',
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
