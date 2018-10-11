@@ -42,6 +42,56 @@ class TwitterUser(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def followers(self):
+        """
+        :return: 나를 follow하는 다른 TwitterUser QuerySet
+        """
+        return
+     @property
+    def following(self):
+        """
+        :return: 내가 follow하는 다른 TwitterUser QuerySet
+        """
+        return
+     @property
+    def block_list(self):
+        """
+        :return: 내가 block하는 다른 TwitterUser QuerySet
+        """
+        return
+     def follow(self, user):
+        """
+        user를 follow하는 Relation을 생성
+            1. 이미 존재한다면 만들지 않는다
+            2. user가 block_list에 속한다면 만들지 않는다
+        :param user: TwitterUser
+        :return: tuple(Relation instance, created(생성여부 True/False))
+        """
+        pass
+     def block(self, user):
+        """
+        user를 block하는 Relation을 생성
+            1. 이미 존재한다면 만들지 않는다
+            2. user가 following에 속한다면 해제시키고 만든다
+        :param user: TwitterUser
+        :return: tuple(Relation instance, created(생성여부 True/False))
+        """
+        pass
+     @property
+    def follower_relations(self):
+        """
+         :return: 나를 follow하는 Relation QuerySet
+        """
+        return
+     @property
+    def followee_relations(self):
+        """
+         :return: 내가 follow하는 Relation QuerySet
+        """
+        return
+
+
 
 class Relation(models.Model):
     CHOICE_RELATION_TYPE=(
@@ -51,13 +101,16 @@ class Relation(models.Model):
     from_user = models.ForeignKey(
         TwitterUser,
         on_delete=models.CASCADE,
-        related_name='relations_by_from_user',
+        related_name='from_user_relations',
+        # 만약에 related_name이 지정 되어 있을 경우, related_query_name의 기본값은 related_name과 같음
+        related_query_name='from_user_relations'
     )
 
     to_user = models.ForeignKey(
         TwitterUser,
         on_delete=models.CASCADE,
-        related_name='relation_set'
+        related_name='to_user_relations',
+        related_query_name='to_user_relations'
     )
     relation_type = models.CharField(
         choices=CHOICE_RELATION_TYPE,
