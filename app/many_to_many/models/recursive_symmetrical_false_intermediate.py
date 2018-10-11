@@ -1,10 +1,11 @@
 from django.db import models
-
+from django.utils import timezone
 
 __all__ = (
     'TwitterUser',
     'Relation',
 )
+
 
 class TwitterUser(models.Model):
     """
@@ -47,44 +48,72 @@ class TwitterUser(models.Model):
         """
         :return: 나를 follow하는 다른 TwitterUser QuerySet
         """
-        return
-     @property
+
+        return TwitterUser.objects.filter(
+            from_user_relations__to_user=self,
+            from_user_relations__relation_type='f',
+        )
+
+    @property
     def following(self):
         """
         :return: 내가 follow하는 다른 TwitterUser QuerySet
         """
-        return
-     @property
+        return TwitterUser.objects.filter(
+            to_user_relations__from_user=self,
+            to_user_relations__relation_type='f'
+        )
+
+    @property
     def block_list(self):
         """
         :return: 내가 block하는 다른 TwitterUser QuerySet
         """
-        return
-     def follow(self, user):
+        return TwitterUser.objects.filter(
+            to_user_relations__from_user=self,
+            to_user_relations__relation_type='b',
+        )
+
+    def follow(self, user):
         """
         user를 follow하는 Relation을 생성
             1. 이미 존재한다면 만들지 않는다
             2. user가 block_list에 속한다면 만들지 않는다
         :param user: TwitterUser
-        :return: tuple(Relation instance, created(생성여부 True/False))
+        :return: tuple(Relation instance,
         """
-        pass
-     def block(self, user):
+        if not self.from_user_relations.filter(to_user=user).exists():
+            self.from_user_relations.create(to_user=user, relation_type='f')
+        return self.from_user_relations.get(to_user=user)
+
+    def block(self, user):
         """
         user를 block하는 Relation을 생성
             1. 이미 존재한다면 만들지 않는다
             2. user가 following에 속한다면 해제시키고 만든다
         :param user: TwitterUser
-        :return: tuple(Relation instance, created(생성여부 True/False))
+        :return: tuple(Relation instance,
         """
-        pass
-     @property
+        try:
+            relation = self.from_user_relations.get(to_user=user)
+            if relation.relation_type == 'f':
+                relation.relation_type = 'b'
+                relation.created_at= timezone.now()
+                relation.save()
+
+        except Relation.DoesNotExist:
+            relation= self.from_user_relations.create(to_user=user, relation_type='b')
+
+        return relation
+
+    @property
     def follower_relations(self):
         """
          :return: 나를 follow하는 Relation QuerySet
         """
         return
-     @property
+
+    @property
     def followee_relations(self):
         """
          :return: 내가 follow하는 Relation QuerySet
@@ -92,9 +121,8 @@ class TwitterUser(models.Model):
         return
 
 
-
 class Relation(models.Model):
-    CHOICE_RELATION_TYPE=(
+    CHOICE_RELATION_TYPE = (
         ('f', 'Follow'),
         ('b', 'Block'),
     )
