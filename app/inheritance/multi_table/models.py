@@ -1,8 +1,7 @@
 from django.db import models
 
 
-class Place1(models.Model):
-
+class Place(models.Model):
     # id = models.Autofield(primary_key=True)
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=80)
@@ -13,25 +12,32 @@ class Place1(models.Model):
     class Meta:
         db_table = "Inheritance_Multitable_Place"
 
+
 def get_removed_place():
     try:
-        place = Place1.objects.get(name='철거됨')
-    except Place1.DoesNotExist:
-        place = Place1.objects.create(name='철거됨')
+        place = Place.objects.get(name='철거됨')
+    except Place.DoesNotExist:
+        place = Place.objects.create(name='철거됨')
     return place
 
-class Restaurant1(Place1):
+
+class Restaurant(Place):
     # Multitable inheritance 구현 시 암시적으로 생성되는 one to one 필드
     # 부모 클래스의 소문자화_ptr models.onetoonefield(<부모클래스>)
     # place1_ptr = models.one to one(place1, primary_key=True)
     # 임이의 필드에 parent_link = True 옵션을 주면 <부모클래스의 소문자>_ptr 필드가 생성되지 않음
 
-    # place_ptr = models.OneToOneField(Place, parent_link=True, primary_key=True)
+    place_ptr = models.OneToOneField(
+        Place,
+        parent_link=True,
+        primary_key=True,
+        on_delete=models.CASCADE,
+    )
     serves_hot_dogs = models.BooleanField(default=False)
     serves_pizza = models.BooleanField(default=False)
 
     old_place = models.ForeignKey(
-        Place1, verbose_name='이전 가게 주소',
+        Place, verbose_name='이전 가게 주소',
         blank=True,
         null=True,
         # 만약에 주소건물이 없어졌을 경우 , default 값을 담다
