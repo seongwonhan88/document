@@ -32,11 +32,14 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'fields',
-    'foreignkey',
-    'many_to_many',
-    'one_to_one',
-    'abc_other',
-    'abstract_base_classes',
+
+    'relation.foreignkey',
+    'relation.many_to_many',
+    'relation.one_to_one',
+
+    'inheritance.abc_other',
+    'inheritance.abstract_base_classes',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
