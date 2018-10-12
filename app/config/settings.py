@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'inheritance.abc_other',
     'inheritance.abstract_base_classes',
     'inheritance.multi_table',
+    'inheritance.proxy',
 
     'django.contrib.admin',
     'django.contrib.auth',
