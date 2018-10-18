@@ -41,14 +41,42 @@ class AdminUserManager(models.Manager):
         return super().get_queryset().filter(is_admin=True)
 
 
-class NormalUser(User1):
-    objects = NormalUserManager()
+class UtilMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def show_items(cls):
+        print(f'- Model({cls.__name__}) items -')
+        for item in cls._default_manager.all():
+            print(item)
+
+    def set_name(self, new_name):
+        ori_name = self.name
+        self.name = new_name
+        self.save()
+        print('{class_name} instacne name change ({ori}, {new})'.format(
+            class_name=self.__class__.__name__,
+            ori=ori_name,
+            new=new_name
+        ))
+
+
+class NormalUser(UtilMixin, User1):
+    items = NormalUserManager()
 
     class Meta:
         proxy = True
 
 
-class Admin(User1):
+class AdminExtraManagers(models.Model):
+    items = AdminUserManager()
+
+    class Meta:
+        abstract = True
+
+
+class Admin(UtilMixin, User1, AdminExtraManagers):
     objects = AdminUserManager()
 
     class Meta:
